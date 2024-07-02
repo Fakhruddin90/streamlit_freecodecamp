@@ -13,9 +13,12 @@ This app predicts the **Boston House Price**!
 st.write('---')
 
 # Loads the Boston House Price Dataset
-boston = datasets.load_boston()
-X = pd.DataFrame(boston.data, columns=boston.feature_names)
-Y = pd.DataFrame(boston.target, columns=["MEDV"])
+filename = "datasets/boston_house_prices.csv"
+
+boston = pd.read_csv(filename)
+
+X = pd.DataFrame(boston, columns=["CRIM","ZN","INDUS","CHAS","NOX","RM","AGE","DIS","RAD","TAX","PTRATIO","B","LSTAT"])
+Y = pd.DataFrame(boston, columns=["MEDV"])
 
 # Sidebar
 # Header of Specify Input Parameters
@@ -30,8 +33,8 @@ def user_input_features():
     RM = st.sidebar.slider('RM', X.RM.min(), X.RM.max(), X.RM.mean())
     AGE = st.sidebar.slider('AGE', X.AGE.min(), X.AGE.max(), X.AGE.mean())
     DIS = st.sidebar.slider('DIS', X.DIS.min(), X.DIS.max(), X.DIS.mean())
-    RAD = st.sidebar.slider('RAD', X.RAD.min(), X.RAD.max(), X.RAD.mean())
-    TAX = st.sidebar.slider('TAX', X.TAX.min(), X.TAX.max(), X.TAX.mean())
+    RAD = st.sidebar.slider('RAD', int(X.RAD.min()), int(X.RAD.max()), int(X.RAD.mean()))
+    TAX = st.sidebar.slider('TAX', int(X.TAX.min()), int(X.TAX.max()), int(X.TAX.mean()))
     PTRATIO = st.sidebar.slider('PTRATIO', X.PTRATIO.min(), X.PTRATIO.max(), X.PTRATIO.mean())
     B = st.sidebar.slider('B', X.B.min(), X.B.max(), X.B.mean())
     LSTAT = st.sidebar.slider('LSTAT', X.LSTAT.min(), X.LSTAT.max(), X.LSTAT.mean())
@@ -76,11 +79,15 @@ explainer = shap.TreeExplainer(model)
 shap_values = explainer.shap_values(X)
 
 st.header('Feature Importance')
+fig1, ax1 = plt.subplots()
 plt.title('Feature importance based on SHAP values')
-shap.summary_plot(shap_values, X)
-st.pyplot(bbox_inches='tight')
+plt.gcf()
+shap.summary_plot(shap_values, X, show=False)
+st.pyplot(fig1, bbox_inches='tight')
 st.write('---')
 
+fig2, ax2 = plt.subplots()
 plt.title('Feature importance based on SHAP values (Bar)')
-shap.summary_plot(shap_values, X, plot_type="bar")
-st.pyplot(bbox_inches='tight')
+plt.gcf()
+shap.summary_plot(shap_values, X, plot_type="bar", show=False)
+st.pyplot(fig2, bbox_inches='tight')
